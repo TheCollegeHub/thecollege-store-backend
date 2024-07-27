@@ -11,11 +11,15 @@ app.use(express.json());
 app.use(cors());
 
 // Database Connection With MongoDB
-mongoose.connect(`${mongo_url}/thecollegestore`);
+mongoose.connect(`${mongo_url}/thecollegestore`,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
 
-// paste your mongoDB Connection string above with password
-// password should not contain '@' special character
-
+    })
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err)
+);
 
 //Image Storage Engine 
 const storage = multer.diskStorage({
