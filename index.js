@@ -6,12 +6,12 @@ const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
 const port = process.env.PORT || 4000;
-
+const mongo_url = process.env.MONGO_URL || "mongodb://localhost:27017/" 
 app.use(express.json());
 app.use(cors());
 
 // Database Connection With MongoDB
-mongoose.connect("mongodb://localhost:27017/thecollegestore");
+mongoose.connect(`${mongo_url}/thecollegestore`);
 
 // paste your mongoDB Connection string above with password
 // password should not contain '@' special character
