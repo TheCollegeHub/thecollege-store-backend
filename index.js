@@ -13,7 +13,7 @@ app.use(cors());
 
 console.log(mongo_url);
 // Database Connection With MongoDB
-mongoose.connect(`${mongo_url}/thecollegestore?retryWrites=true&w=majority`)
+mongoose.connect(`${mongo_url}/thecollegestore?authSource=admin`)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err)
 );
