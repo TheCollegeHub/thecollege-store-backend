@@ -10,8 +10,6 @@ const mongo_url = process.env.MONGO_URL || "mongodb://localhost:27017/"
 app.use(express.json());
 app.use(cors());
 
-
-console.log(mongo_url);
 // Database Connection With MongoDB
 mongoose.connect(`${mongo_url}/thecollegestore?authSource=admin`)
     .then(() => console.log('MongoDB Connected'))
