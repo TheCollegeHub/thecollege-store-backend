@@ -10,13 +10,15 @@ const mongo_url = process.env.MONGO_URL || "mongodb://localhost:27017/"
 app.use(express.json());
 app.use(cors());
 
+
+console.log(mongo_url);
 // Database Connection With MongoDB
 mongoose.connect(`${mongo_url}/thecollegestore?retryWrites=true&w=majority`,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
 
-    })
+    }) 
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err)
 );
