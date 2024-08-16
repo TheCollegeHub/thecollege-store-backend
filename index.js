@@ -5,8 +5,10 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
+const { use } = require("express/lib/application");
 const port = process.env.PORT || 4000;
-const mongo_url = process.env.MONGO_URL || "mongodb://localhost:27017/" 
+const mongo_url = process.env.MONGO_URL || "mongodb://localhost:27017" 
+const fs = require('fs');
 app.use(express.json());
 app.use(cors());
 
@@ -60,6 +62,18 @@ const Users = mongoose.model("Users", {
   cartData: { type: Object },
   date: { type: Date, default: Date.now() },
 });
+
+const UsersV2 = mongoose.model("UsersV2", {
+  firstName: { type: String },
+  lastName: { type: String },
+  username: { type: String },
+  phoneNumber: { type: String },
+  profilePicture: { type: String },
+  email: { type: String, unique: true },
+  password: { type: String },
+  date: { type: Date, default: Date.now() },
+});
+
 
 
 // Schema for creating Product
@@ -119,6 +133,37 @@ app.post('/login', async (req, res) => {
   }
 })
 
+// Create an endpoint at ip/login for login the user and giving auth-token
+app.post('/v2/login', async (req, res) => {
+  console.log("Login V2");
+  let success = false;
+  let user = await UsersV2.findOne({ email: req.body.email });
+  console.log(req.body.email)
+  if (user) {
+    console.log(user)
+    const passCompare = req.body.password === user.password;
+    if (passCompare) {
+      const data = {
+        user: {
+          id: user.id
+        }
+      }
+      success = true;
+      id = user.id;
+      console.log(user.id);
+      const token = jwt.sign(data, 'secret_ecom');
+      res.json({ success, token , id});
+    }
+    else {
+      return res.status(400).json({ success: success, errors: "please try with correct email/password" })
+    }
+  }
+  else {
+    return res.status(400).json({ success: success, errors: "please try with correct email/password" })
+  }
+})
+
+
 
 //Create an endpoint at ip/auth for regestring the user & sending auth-token
 app.post('/signup', async (req, res) => {
@@ -151,6 +196,36 @@ app.post('/signup', async (req, res) => {
   res.json({ success, token, id })
 })
 
+//Create an endpoint at ip/auth for regestring the user & sending auth-token
+app.post('/v2/signup', async (req, res) => {
+  console.log("Sign Up V2");
+  let success = false;
+  let check = await UsersV2.findOne({ email: req.body.email });
+  if (check) {
+    return res.status(400).json({ success: success, errors: "existing user found with this email" });
+  }
+  const user = new UsersV2({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    username: req.body.username,
+    phoneNumber: req.body.phoneNumber,
+    profilePicture: req.body.profilePicture,
+    email: req.body.email  ,
+    password: req.body.password,
+  });
+  await user.save();
+  const data = {
+    user: {
+      id: user.id
+    }
+  }
+  
+  const id = user.id
+  const token = jwt.sign(data, 'secret_ecom');
+  success = true;
+  res.json({ success, token, id })
+})
+
 
 app.get('/api/user/:userId/', async (req, res) => {
   const { userId } = req.params;
@@ -169,6 +244,25 @@ app.get('/api/user/:userId/', async (req, res) => {
     return res.status(500).json({ error: 'Internal Error to proccess the request' });
   }
 });
+
+app.get('/api/v2/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await UsersV2.findOne({ _id: userId});
+    console.log(user)
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ data: user });
+
+  } catch (error) {
+    console.error('Error when get user information:', error);
+    return res.status(500).json({ error: 'Internal Error to proccess the request' });
+  }
+});
+
 
 
 // endpoint for getting all products data
@@ -474,6 +568,300 @@ app.get('/api/orders/:orderId', async (req, res) => {
 });
 
 
+const CategorySchema = new mongoose.Schema({
+  name: String,
+  image: String,
+  parentId: String,
+  isFeatured: Boolean,
+});
+
+const Category = mongoose.model('Category', CategorySchema);
+
+// Endpoint para buscar categorias
+app.get('/api/v1/categories', async (req, res) => {
+  const { parentId } = req.query;
+  try {
+    let categories;
+    if (parentId) {
+      categories = await Category.find({ parentId });
+    } else {
+      categories = await Category.find();
+    }
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ message: 'Error to get categories', error });
+  }
+});
+
+const productSchema = new mongoose.Schema({
+  id: String,
+  stock: Number,
+  sku: String,
+  price: Number,
+  title: String,
+  date: Date,
+  salePrice: Number,
+  thumbnail: String,
+  categoryId: String,
+  description: String,
+  productType: String,
+  images: [String],
+});
+
+const ProductV2 = mongoose.model('productsv2', productSchema);
+
+app.get('/api/v2/products', async (req, res) => {
+  try {
+    // Consulta os produtos com o filtro aplicado
+    const products = await ProductV2.find();
+
+    // Retorna a lista de produtos encontrados
+    res.json(products);
+  } catch (error) {
+    // Retorna uma mensagem de erro se algo der errado
+    res.status(500).json({ message: 'Error retrieving products', error });
+  }
+});
+
+app.post('/api/v2/products/favourites', async (req, res) => {
+  const productIds = req.body.productIds; 
+
+  try {
+    const products = await ProductV2.find({ _id: { $in: productIds } });
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get('/api/v2/products/category', async (req, res) => {
+  const { categoryId, limit } = req.query;
+  const limitInt = parseInt(limit, 10) || 4;
+
+  try {
+    const products = await ProductV2.find({ categoryId }).limit(limitInt);
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+const bannerSchema = new mongoose.Schema({
+  imageUrl: String,
+  targetScreen: String,
+  active: Boolean,
+});
+
+const Banners = mongoose.model('Banners', bannerSchema);
+
+// Endpoint para obter todos os banners
+app.get('/api/v1/banners', async (req, res) => {
+  try {
+    const banners = await Banners.find();
+    res.status(200).send(banners);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+})
+
+// Address model
+const addressSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  name: String,
+  phoneNumber: String,
+  street: String,
+  city: String,
+  state: String,
+  postalCode: String,
+  country: String,
+  dateTime: { type: Date, default: Date.now },
+  selectedAddress: { type: Boolean, default: true },
+});
+
+const AddressV2 = mongoose.model('addressesv2', addressSchema);
+
+// Routes
+app.get('/api/v2/addresses', async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    if (!userId) {
+      return res.status(400).json({ message: 'UserId is required' });
+    }
+    const addresses = await AddressV2.find({ userId });
+    res.json(addresses);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post('/api/v2/addresses', async (req, res) => {
+  const addressv2 = new AddressV2({
+    userId: req.body.userId,
+    name: req.body.name,
+    phoneNumber: req.body.phoneNumber,
+    street: req.body.street,
+    city: req.body.city,
+    state: req.body.state,
+    postalCode: req.body.postalCode,
+    country: req.body.country,
+    selectedAddress: req.body.selectedAddress,
+  });
+
+  try {
+    const newAddress = await addressv2.save();
+    res.status(201).json(newAddress);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.put('/api/v2/addresses/:id', async (req, res) => {
+  const addressId = req.params.id;
+  const { userId, name, phoneNumber, street, city, state, postalCode, country, selectedAddress } = req.body;
+
+  try {
+    const address = await AddressV2.findOneAndUpdate(
+      { _id: addressId, userId: userId },
+      { name, phoneNumber, street, city, state, postalCode, country, selectedAddress },
+      { new: true }
+    );
+
+    if (!address) {
+      return res.status(404).json({ message: 'Address not found' });
+    }
+
+    res.status(200).json(address);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.patch('/api/v2/addresses/:addressId', async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const { selectedAddress } = req.body;
+
+    if (selectedAddress === undefined) {
+      return res.status(400).json({ message: 'selectedAddress is required' });
+    }
+
+    const updatedAddress = await AddressV2.findByIdAndUpdate(
+      addressId,
+      { selectedAddress },
+      { new: true }
+    );
+
+    if (!updatedAddress) {
+      return res.status(404).json({ message: 'Address not found' });
+    }
+
+    res.status(200).json(updatedAddress);
+  } catch (err) {
+    res.status(500).json({ message: 'An error occurred while updating the address', error: err.message });
+  }
+});
+
+const orderSchema = new mongoose.Schema({
+  userId: String,
+  status: String,
+  totalAmount: Number,
+  shippingCost: Number,
+  taxCost: Number,
+  orderDate: Date,
+  paymentMethod: String,
+  billingAddress: Object,
+  shippingAddress: Object,
+  deliveryDate: Date,
+  items: Array,
+  billingAddressSameAsShipping: Boolean,
+});
+
+const OrderV2 = mongoose.model('ordersv2', orderSchema);
+
+app.get('/api/v2/orders', async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) return res.status(400).json({ message: 'User ID is required' });
+
+  try {
+    const orders = await OrderV2.find({ userId });
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post('/api/v2/orders', async (req, res) => {
+  const orderData = req.body;
+
+  try {
+    const newOrder = new OrderV2(orderData);
+    await newOrder.save();
+    res.status(201).json(newOrder);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.patch('/api/v2/users/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const updateData = req.body;
+
+    // Verifique se updateData não está vazio
+    if (!updateData || Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: 'No fields provided for update' });
+    }
+
+    // Atualize os campos fornecidos no documento de usuário
+    const updatedUser = await UsersV2.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: 'An error occurred while updating the user', error: err.message });
+  }
+});
+
+function findImageWithExtensions(basePath, extensions) {
+  for (let ext of extensions) {
+      const fullPath = `${basePath}.${ext}`;
+      if (fs.existsSync(fullPath)) {
+          return fullPath;
+      }
+  }
+  return null;
+}
+
+app.get('/api/v1/images', (req, res) => {
+  const { type, name } = req.query;
+
+  console.log(name)
+  if (!type || !name) {
+      return res.status(400).send('Params "type" e "name" are required');
+  }
+
+   const baseImagePath = path.join(__dirname, 'data', 'images', type, name);
+
+   const possibleExtensions = ['jpg', 'png', 'jpeg'];
+
+   const imagePath = findImageWithExtensions(baseImagePath, possibleExtensions);
+
+
+  if (fs.existsSync(imagePath)) {
+      res.sendFile(imagePath);
+  } else {
+      res.status(404).send('Imagem not found');
+  }
+});
 
 
 // Starting Express Server
