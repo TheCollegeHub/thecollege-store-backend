@@ -1,58 +1,73 @@
 db.collection('categories').insertMany([
   {
-    "_id": ObjectId("66c112a01679da194f73670b"),
+    "_id": new ObjectId("66c112a01679da194f73670b"),
     "name": "Electronics",
     "image": "/api/v1/images?type=categories&name=electronics",
     "parentId": "",
     "isFeatured": true
   },
   {
-    "_id": ObjectId("66c112a01679da194f73670c"),
+    "_id": new ObjectId("66c112a01679da194f73670c"),
     "name": "Furniture",
     "image": "/api/v1/images?type=categories&name=furniture",
     "parentId": "",
-    "isFeatured": false
+    "isFeatured": true
   },
   {
-    "_id": ObjectId("66c112a01679da194f73670d"),
+    "_id": new ObjectId("66c112a01679da194f73670d"),
     "name": "Sports",
     "image": "/api/v1/images?type=categories&name=sports",
     "parentId": "",
     "isFeatured": true
   },
   {
-    "_id": ObjectId("66c112a01679da194f73670e"),
+    "_id": new ObjectId("66c112a01679da194f73670e"),
     "name": "Clothes",
     "image": "/api/v1/images?type=categories&name=clothes",
     "parentId": "",
     "isFeatured": true
   },
   {
-    "_id": ObjectId("66c112a01679da194f73670f"),
+    "_id": new ObjectId("66c112a01679da194f73670f"),
     "name": "Shoes",
     "image": "/api/v1/images?type=categories&name=shoes",
     "parentId": "",
     "isFeatured": false
   },
   {
-    "_id": ObjectId("66c12058133f145677b3a808"),
+    "_id": new ObjectId("66c12058133f145677b3a808"),
     "name": "Smartphones",
     "image": "/api/v1/images?type=categories&name=electronics",
     "parentId": "66c112a01679da194f73670b",
     "isFeatured": true
   },
   {
-    "_id": ObjectId("66c120d0133f145677b3a80b"),
+    "_id": new ObjectId("66c120d0133f145677b3a80b"),
     "name": "Sport Shoes",
     "image": "/api/v1/images?type=categories&name=shoes",
     "parentId": "66c112a01679da194f73670d",
     "isFeatured": true
   },
   {
-    "_id": ObjectId("66c121aa133f145677b3a813"),
+    "_id": new ObjectId("66c121aa133f145677b3a813"),
     "name": "T-Shirts",
     "image": "/api/v1/images?type=categories&name=clothes",
     "parentId": "66c112a01679da194f73670e",
     "isFeatured": true
+  },
+  {
+    "_id": new ObjectId("66c6682ba3580d7fafd22a22"),
+    "name": "Office furniture",
+    "image": "/api/v1/images?type=categories&name=furniture",
+    "parentId": "66c112a01679da194f73670c",
+    "isFeatured": true
+  },
+  {
+    "_id": new ObjectId("66c66876a3580d7fafd22a23"),
+    "name": "Notebook",
+    "image": "/api/v1/images?type=categories&name=electronics",
+    "parentId": "66c112a01679da194f73670b",
+    "isFeatured": true
   }
-]);
+]
+);

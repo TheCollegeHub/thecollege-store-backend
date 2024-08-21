@@ -1,15 +1,15 @@
-db.banners.insertMany([{
+db.collection('banners').insertMany([{
     imageUrl: "/api/v1/images?type=banners&name=banner_1",
-    targetScreen: "HomeScreen",
+    targetScreen: "/cart",
     active: true
   },
   {
     imageUrl: "/api/v1/images?type=banners&name=banner_2",
-    targetScreen: "CheckoutScreen",
+    targetScreen: "/checkout",
     active: true
   },
   {
     imageUrl: "/api/v1/images?type=banners&name=banner_3",
-    targetScreen: "FavouriteScreen",
+    targetScreen: "/favourites",
     active: true
   }]);

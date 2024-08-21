@@ -646,6 +646,39 @@ app.get('/api/v2/products/category', async (req, res) => {
   }
 });
 
+app.get('/api/v1/products/search', async (req, res) => {
+  try {
+    const { query, categoryId, brandId, minPrice, maxPrice } = req.query;
+
+    let filter = {};
+
+    if (query) {
+      filter.title = { $regex: query, $options: 'i' }; 
+    }
+
+    if (categoryId) {
+      filter.categoryId = categoryId;
+    }
+
+    if (brandId) {
+      filter.sku = brandId;
+    }
+
+    if (minPrice) {
+      filter.price = { ...filter.price, $gte: parseFloat(minPrice) };
+    }
+
+    if (maxPrice) {
+      filter.price = { ...filter.price, $lte: parseFloat(maxPrice) };
+    }
+
+    const products = await ProductV2.find(filter);
+
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ error: 'Error to searcg product' });
+  }
+});
 
 
 const bannerSchema = new mongoose.Schema({

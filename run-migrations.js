@@ -27,9 +27,11 @@ async function runMigrations() {
         // Read migration file content
         const migrationContent = fs.readFileSync(filePath, 'utf8');
 
-        // Execute migration content
-        const runMigration = new Function('db', migrationContent);
-        await runMigration(mongoose.connection.db);
+        // Create a new function to execute migration
+        const runMigration = new Function('db', 'ObjectId', migrationContent);
+
+        // Pass the database connection and ObjectId
+        await runMigration(mongoose.connection.db, mongoose.Types.ObjectId);
 
         console.log(`Migration ${file} executed successfully`);
       } catch (err) {
@@ -40,7 +42,7 @@ async function runMigrations() {
 
     console.log('All migrations executed successfully');
 
-    // Wait for 15 seconds before disconnecting to ensure all operations have completed
+    // Wait for 10 seconds before disconnecting to ensure all operations have completed
     console.log('Waiting all migrations before disconnecting...');
     await new Promise(resolve => setTimeout(resolve, 10000));
 
