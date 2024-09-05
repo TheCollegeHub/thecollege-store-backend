@@ -1,14 +1,41 @@
 services:
-  mongodb:
+  app:
+    build: .
+    container_name: college_store_app
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+    networks:
+      - college_store_network
+
+  mongo:
     image: mongo:latest
+    container_name: college_store_mongo
     ports:
       - "27017:27017"
-    # environment:
-    #   - MONGO_INITDB_ROOT_USERNAME=admin
-    #   - MONGO_INITDB_ROOT_PASSWORD=admin
+    networks:
+      - college_store_network
     volumes:
-      - mongo-data:/data/db
-      
+      - mongo_data:/data/db
+
+  migrate:
+    build: .
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+    command: node run-migrations.js
+    depends_on:
+      - mongo
+    networks:
+      - college_store_network
+
+networks:
+  college_store_network:
+    driver: bridge
+
 volumes:
-  mongo-data:
-    driver: local
+  mongo_data:
