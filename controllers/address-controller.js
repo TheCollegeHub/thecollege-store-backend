@@ -2,7 +2,6 @@ import { Address, AddressV2 } from "../models/address"
 
 
 export async function createUserAddress(req, res) {
-// app.post('/api/user/:userId/addresses', async (req, res) => {
     const { userId } = req.params;
     const { street, city, state, zip } = req.body;
   
@@ -25,7 +24,6 @@ export async function createUserAddress(req, res) {
   };
   
   export async function getUserAddresses(req, res) {
-//   app.get('/api/user/:userId/addresses', async (req, res) => {
     const { userId } = req.params;
   
     try {
@@ -44,7 +42,6 @@ export async function createUserAddress(req, res) {
 
 
   export async function getUserAddressesV2(req, res) {
-// app.get('/api/v2/addresses', async (req, res) => {
     try {
       const userId = req.query.userId;
       if (!userId) {
@@ -58,7 +55,6 @@ export async function createUserAddress(req, res) {
   };
 
   export async function createUserAddressV2(req, res) {
-//   app.post('/api/v2/addresses', async (req, res) => {
     const addressv2 = new AddressV2({
       userId: req.body.userId,
       name: req.body.name,
@@ -80,7 +76,6 @@ export async function createUserAddress(req, res) {
   };
   
   export async function updateUserAddress(req, res) {
-//   app.put('/api/v2/addresses/:id', async (req, res) => {
     const addressId = req.params.id;
     const { userId, name, phoneNumber, street, city, state, postalCode, country, selectedAddress } = req.body;
   
@@ -102,7 +97,6 @@ export async function createUserAddress(req, res) {
   };
   
   export async function selectUserAddressAsPrincipal(req, res) {
-//   app.patch('/api/v2/addresses/:addressId', async (req, res) => {
     try {
       const { addressId } = req.params;
       const { selectedAddress } = req.body;

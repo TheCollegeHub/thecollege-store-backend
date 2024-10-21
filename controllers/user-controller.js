@@ -55,7 +55,7 @@ export async function login(req, res) {
         }
       }
       success = true;
-      id = user.id;
+      const id = user.id;
       console.log(user.id);
       const token = sign(data, 'secret_ecom');
       res.json({ success, token , id});
