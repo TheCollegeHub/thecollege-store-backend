@@ -1,15 +1,32 @@
-import {Order, OrderV2} from "../models/order"
+import { Order, OrderV2 } from "../models/order"
+import { checkProductStock } from "../grpc/clients/grpc-product-client"
+import { connectProducer, sendMessage } from "../queue/producers/product-producer"
+
+connectProducer()
 
 export const generateOrderNumber = () => {
     return `ORD-${Date.now()}`;
 };
 
 export async function createOrder(req, res) {
-// app.post('/api/user/:userId/orders', async (req, res) => {
     try {
       const { userId } = req.params;
       const { cartItems, totalAmount, discount, finalAmount, address, paymentMethod } = req.body;
   
+    const validCartItemIds = Object.entries(cartItems)
+      .filter(([index, quantity]) => quantity > 0)
+      .map(([index]) => parseInt(index, 10));
+
+    const stockResponse = await checkProductStock(validCartItemIds);
+    
+    if (stockResponse.productsOutOfStock && stockResponse.productsOutOfStock.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'PRODUCTS_WITHOUT_STOCK',
+        unavailableProducts: stockResponse.productsOutOfStock,
+      });
+    }
+
       const orderNumber = generateOrderNumber();
   
       const order = new Order({
@@ -24,15 +41,25 @@ export async function createOrder(req, res) {
       });
   
       await order.save();
+
+    Object.entries(cartItems)
+      .filter(([id, quantity]) => quantity > 0) 
+      .map(([id, quantity]) => ({
+        orderNumber: order.orderNumber,
+        productId: parseInt(id, 10), 
+        quantity,
+      })).forEach(async productMessage => {
+        await sendMessage('update-stock', productMessage);
+      });
+
       res.status(200).json({ success: true, order });
     } catch (error) {
       console.error('Error creating order:', error);
       res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
-  };
+};
   
   export async function getOrderByUserId(req, res) {
-//   app.get('/api/user/:userId/orders', fetchuser, async (req, res) => {
     const { userId } = req.params;
   
     try {
@@ -46,7 +73,6 @@ export async function createOrder(req, res) {
   
   
   export async function getOrderById(req, res) {
-//   app.get('/api/orders/:orderId', async (req, res) => {
     const { orderId } = req.params;
   
     try {
@@ -60,7 +86,6 @@ export async function createOrder(req, res) {
 
 
   export async function getOrdersV2ByUserId(req, res) {
-//   app.get('/api/v2/orders', async (req, res) => {
     const userId = req.query.userId;
     if (!userId) return res.status(400).json({ message: 'User ID is required' });
   
@@ -73,7 +98,6 @@ export async function createOrder(req, res) {
   };
   
   export async function createOrderV2(req, res) {
-//   app.post('/api/v2/orders', async (req, res) => {
     const orderData = req.body;
   
     try {

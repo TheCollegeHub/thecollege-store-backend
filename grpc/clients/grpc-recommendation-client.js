@@ -42,7 +42,7 @@ export async function getRecommendations(userId) {
                         recommendedProductIds: response.recommendedProductIds
                     };
                     await redisClient.set(userId, JSON.stringify(cacheData), {
-                        EX: 60 // Cache for 10 seconds
+                        EX: 60 // Cache for 60 seconds
                     });
                     resolve(cacheData);
                 } else {
