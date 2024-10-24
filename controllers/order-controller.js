@@ -1,6 +1,7 @@
 import { Order, OrderV2 } from "../models/order"
 import { checkProductStock } from "../grpc/clients/grpc-product-client"
-import { connectProducer, sendMessage } from "../queue/producers/product-producer"
+import { connectProducer, sendMessage } from "../queue/producers/kafka-producer"
+import { processOrderMessage } from "../services/process-order-details"
 
 connectProducer()
 
@@ -42,15 +43,18 @@ export async function createOrder(req, res) {
   
       await order.save();
 
-    Object.entries(cartItems)
-      .filter(([id, quantity]) => quantity > 0) 
-      .map(([id, quantity]) => ({
-        orderNumber: order.orderNumber,
-        productId: parseInt(id, 10), 
-        quantity,
-      })).forEach(async productMessage => {
-        await sendMessage('update-stock', productMessage);
-      });
+      Object.entries(cartItems)
+        .filter(([id, quantity]) => quantity > 0) 
+        .map(([id, quantity]) => ({
+          orderNumber: order.orderNumber,
+          productId: parseInt(id, 10), 
+          quantity,
+        })).forEach(async productMessage => {
+          await sendMessage('update-stock', productMessage);
+        });
+
+      const orderMesssage = await processOrderMessage(order.orderNumber);
+      await sendMessage('send-notification', orderMesssage);
 
       res.status(200).json({ success: true, order });
     } catch (error) {
