@@ -32,6 +32,14 @@ services:
       - mongo
     networks:
       - college_store_network
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - redis_data:/data 
 
 networks:
   college_store_network:
@@ -39,3 +47,5 @@ networks:
 
 volumes:
   mongo_data:
+  redis_data:
+    driver: local
