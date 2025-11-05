@@ -1,17 +1,17 @@
 services:
-  app:
-    build: .
-    container_name: college_store_app
-    ports:
-      - "4000:4000"
-    environment:
-      - MONGO_URL=mongodb://mongo:27017
-    depends_on:
-      - mongo
-    volumes:
-      - .:/app
-    networks:
-      - college_store_network
+  # app:
+  #   build: .
+  #   container_name: college_store_app
+  #   ports:
+  #     - "4000:4000"
+  #   environment:
+  #     - MONGO_URL=mongodb://mongo:27017
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     - .:/app
+  #   networks:
+  #     - college_store_network
 
   mongo:
     image: mongo:latest
