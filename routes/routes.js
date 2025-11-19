@@ -11,8 +11,8 @@ import discountRoutes from "./discount"
 import categoryRoutes from "./categories"
 import bannerRoutes from "./banners"
 import imageRoutes from "./images"
+import recommendationRoutes from "./recommendation"
 
-// Define as rotas principais
 router.use(userRoutes);
 router.use(cartRoutes);
 router.use(orderRoutes);
@@ -22,5 +22,6 @@ router.use(discountRoutes);
 router.use(categoryRoutes);
 router.use(bannerRoutes);
 router.use(imageRoutes);
+router.use(recommendationRoutes);
 
 export default router;

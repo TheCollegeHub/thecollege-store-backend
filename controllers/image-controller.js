@@ -15,7 +15,7 @@ function findImageWithExtensions(basePath, extensions) {
 //   app.get('/api/v1/images', (req, res) => {
     const { type, name } = req.query;
   
-    console.log(name)
+    // console.log(name)
     if (!type || !name) {
         return res.status(400).send('Params "type" e "name" are required');
     }
@@ -25,7 +25,7 @@ function findImageWithExtensions(basePath, extensions) {
      const possibleExtensions = ['jpg', 'png', 'jpeg'];
   
      const imagePath = findImageWithExtensions(baseImagePath, possibleExtensions);
-    console.log(baseImagePath)
+    // console.log(baseImagePath)
   
     if (existsSync(imagePath)) {
         res.sendFile(imagePath);
