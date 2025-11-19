@@ -3,7 +3,6 @@ const router = Router();
 
 // Importa as rotas individuais
 import userRoutes from './users';
-import productRoutes from './products';
 import cartRoutes from './cart';
 import orderRoutes from "./orders"
 import addressRoutes from "./address"
@@ -15,7 +14,6 @@ import imageRoutes from "./images"
 
 // Define as rotas principais
 router.use(userRoutes);
-router.use(productRoutes);
 router.use(cartRoutes);
 router.use(orderRoutes);
 router.use(addressRoutes);

@@ -1,18 +1,4 @@
 services:
-  # app:
-  #   build: .
-  #   container_name: college_store_app
-  #   ports:
-  #     - "4000:4000"
-  #   environment:
-  #     - MONGO_URL=mongodb://mongo:27017
-  #   depends_on:
-  #     - mongo
-  #   volumes:
-  #     - .:/app
-  #   networks:
-  #     - college_store_network
-
   mongo:
     image: mongo:latest
     container_name: college_store_mongo
@@ -30,8 +16,21 @@ services:
     command: node run-migrations.js
     depends_on:
       - mongo
+      - consul
     networks:
       - college_store_network
+
+  consul:
+    image: hashicorp/consul:latest
+    container_name: college_store_consul
+    networks:
+      - college_store_network
+    ports:
+      - "8500:8500"        
+      - "8600:8600/udp"
+    command: agent -dev -client=0.0.0.0
+    volumes:
+      - consul_data:/consul/data
 
 networks:
   college_store_network:
@@ -39,3 +38,4 @@ networks:
 
 volumes:
   mongo_data:
+  consul_data:
