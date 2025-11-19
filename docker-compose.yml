@@ -19,6 +19,7 @@ services:
       - consul
     networks:
       - college_store_network
+      
   redis:
     image: redis:alpine
     container_name: redis
