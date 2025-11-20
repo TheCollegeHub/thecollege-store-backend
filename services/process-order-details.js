@@ -11,9 +11,9 @@ export async function processOrderMessage(orderNumber) {
 
     const cartItem = order.cartItems[0];
     const productIds = Object.keys(cartItem).filter(key => cartItem[key] > 0)
-    const { data: products } = await axios.post('http://localhost:4000/api/products', { ids: productIds });
+    const { data: products } = await axios.post('http://localhost:5002/api/products', { ids: productIds });
     console.log(products)
-    const response = await axios.get(`http://localhost:4000/api/user/${order.userId}`);
+    const response = await axios.get(`http://localhost:5001/api/user/${order.userId}`);
     const userData = response.data.data;
     console.log(userData)
 

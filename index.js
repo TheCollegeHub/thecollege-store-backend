@@ -4,8 +4,9 @@ import cors from "cors";
 import { serve, setup } from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import routes from './routes/routes';
+import { registerWithConsul } from "./services/consul-service.js";
 
-const port = process.env.PORT || 4000;
+const port = process.env.CORE_SERVICE_PORT || 5001;
 const mongo_url = process.env.MONGO_URL || "mongodb://localhost:27017" 
 const app = express();
 
@@ -34,7 +35,7 @@ app.use(json());
 app.use(cors());
 app.use('/api-docs', serve, setup(swaggerDocs));
 app.use('/api', routes);
-app.use('/images', static_('upload/images'));
+app.use('/api/images', static_('upload/images'));
 
 connect(`${mongo_url}/thecollegestore?authSource=admin`)
     .then(() => console.log('All done! MongoDB Connected'))
@@ -45,8 +46,21 @@ app.get("/", (req, res) => {
   res.send("Server Running on port " + port);
 });
 
-// Starting Express Server
-app.listen(port, (error) => {
-  if (!error) console.log("Server Running on port " + port);
-  else console.log("Error : ", error);
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
 });
+
+
+
+async function start() {
+  app.listen(port, async (error) => {
+    if (!error){
+        console.log("Server Running on port " + port);
+        await registerWithConsul();
+    }
+    else console.log("Error : ", error);
+  });
+}
+
+start();
+
