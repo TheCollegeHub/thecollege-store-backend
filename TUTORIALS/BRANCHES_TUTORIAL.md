@@ -31,7 +31,7 @@ Below is the ordered list of branches you can explore, each one adding new layer
 This branch contains the version of the ecosystem, that include only the `frontend` (initial features but it has a complete flow to make an order) and `backend core service`
 
 👉 Follow the step-by-step guide here:  
-**[MVP_TUTORIAL.md](./MVP_TUTORIAL.md.md)**
+**[MVP_TUTORIAL.md](./MVP_TUTORIAL.md)**
 
 ___
 
