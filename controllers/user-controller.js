@@ -40,9 +40,7 @@ export async function getUserById(req, res) {
   };
 
   
-// Create an endpoint at ip/login for login the user and giving auth-token
 export async function login(req, res) {
-// app.post('/login', async (req, res) => {
   console.log("Login");
   let success = false;
   let user = await Users.findOne({ email: req.body.email });
@@ -69,9 +67,7 @@ export async function login(req, res) {
   }
 }
 
-// Create an endpoint at ip/login for login the user and giving auth-token
 export async function loginV2(req, res) {
-// app.post('/v2/login', async (req, res) => {
   console.log("Login V2");
   let success = false;
   let user = await UsersV2.findOne({ email: req.body.email });
@@ -102,7 +98,6 @@ export async function loginV2(req, res) {
 }
 
 export async function signup(req, res) {
-// app.post('/signup', async (req, res) => {
   console.log("Sign Up");
   let success = false;
   let check = await Users.findOne({ email: req.body.email });
@@ -133,7 +128,6 @@ export async function signup(req, res) {
 }
 
 export async function signupV2(req, res) {
-// app.post('/v2/signup', async (req, res) => {
   console.log("Sign Up V2");
   let success = false;
   let check = await UsersV2.findOne({ email: req.body.email });
@@ -164,17 +158,14 @@ export async function signupV2(req, res) {
 
 
 export async function updateUserInfo(req, res) {
-// app.patch('/api/v2/users/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const updateData = req.body;
 
-    // Verifique se updateData não está vazio
     if (!updateData || Object.keys(updateData).length === 0) {
       return res.status(400).json({ message: 'No fields provided for update' });
     }
 
-    // Atualize os campos fornecidos no documento de usuário
     const updatedUser = await UsersV2.findByIdAndUpdate(
       userId,
       { $set: updateData },
