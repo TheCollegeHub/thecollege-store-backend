@@ -33,56 +33,7 @@ This branch contains the version of the ecosystem, that include only the `fronte
 👉 Follow the step-by-step guide here:  
 **[MVP_TUTORIAL.md](./MVP_TUTORIAL.md.md)**
 
----
+___
 
-### **2️⃣ Next Feature — (EXAMPLE: Coupons, Auth, Caching, etc.)**
-**Branch:** `feature/<name>`  
-Each feature branch introduces a new part of the system.  
-Examples (adjust based on your real branches):
-
-- `feature/coupons`
-- `feature/recommendations`
-- `feature/cart`
-- `feature/redis-cache`
-- `feature/grpc-products`
-- `feature/kafka-stock`
-
-Each branch includes:
-- What was added  
-- Why it matters  
-- How to run it  
-- API changes  
-- Things to test (QA perspective)
-
-👉 Tutorial for each feature:  
-**[FEATURES_OVERVIEW.md](./FEATURES_OVERVIEW.md)**
-
----
-
-### **3️⃣ Full Ecosystem — Complete Version**
-**Branch:** `main`  
-This is the final and complete system, integrating:
-
-- Backend + Frontend  
-- MongoDB  
-- Redis (Cache)  
-- Kafka (Stock updates)  
-- gRPC service  
-- Notifications  
-- CronJobs  
-- Feature toggles  
-- Vault secrets  
-- Full E2E experience
-
-👉 Follow the complete tutorial here:  
-**[FULL_SYSTEM_TUTORIAL.md](./FULL_SYSTEM_TUTORIAL.md)**
-
----
-
-## 🔄 How to Switch Between Branches
-
-To navigate through the ecosystem evolution:
-
-```bash
-git fetch --all
-git checkout <branch-name>
+Coming soon, the next tutorial branches ...
+Feel free to explore other branches if you want!
