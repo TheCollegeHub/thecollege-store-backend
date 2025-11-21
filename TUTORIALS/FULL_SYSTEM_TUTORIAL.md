@@ -2,7 +2,7 @@
 
 This is the **official README** for installing, configuring, and running the entire The College WebStore. Follow this guide carefully to ensure all services, dependencies, and infrastructure components run correctly.
 
-***But if you don't want the complete system, but rather a small ecosystem (maintaining end-to-end flow) and know the branches feature that exist to use. Please, follow this [BRANCHES_TOTURIAL](./TUTORIALS/BRANCHES_TUTORIAL.md)***
+***But if you don't want the complete system, but rather a small ecosystem (maintaining end-to-end flow) and know the branches feature that exist to use. Please, follow this [BRANCHES_TOTURIAL](./BRANCHES_TUTORIAL.md)***
 
 ---
 
