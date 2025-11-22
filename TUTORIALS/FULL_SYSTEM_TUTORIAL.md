@@ -41,9 +41,12 @@ After cloning, switch to the correct branch for each project:
 | Backend Core Service   | `release` |
 | Product Service        | `release` |
 | Recommendation Service | `main`    |
+| Notification Service   | `main`    |
+| Packages               | `main`    |
 | API Gateway            | `main`    |
+| CronJob                | `main`    |
 
-Then, inside each project:
+Then, inside each project (excluding for now `notification`, `package` and `CronJob`):
 
 ```bash
 npm install
