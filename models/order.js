@@ -1,5 +1,13 @@
 import { model , Schema} from "mongoose";
 
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  IN_TRANSIT: 'IN_TRANSIT',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  RETURNED: 'RETURNED'
+};
+
 export const Order = model("Order", {
     orderNumber: { type: String, required: true, unique: true },
     userId: { type: Schema.Types.ObjectId, ref: "Users", required: true },
@@ -10,12 +18,22 @@ export const Order = model("Order", {
     address: { type: Object, required: true },
     paymentMethod: { type: Object, required: true },
     date: { type: Date, default: Date.now },
+    status: { 
+      type: String, 
+      enum: Object.values(OrderStatus),
+      default: OrderStatus.PENDING 
+    },
+    updatedDate: { type: Date, default: Date.now }
 });
 
 
 export const OrderV2 = model('ordersv2', {
     userId: String,
-    status: String,
+    status: { 
+      type: String, 
+      enum: Object.values(OrderStatus),
+      default: OrderStatus.PENDING 
+    },
     totalAmount: Number,
     shippingCost: Number,
     taxCost: Number,
@@ -26,4 +44,5 @@ export const OrderV2 = model('ordersv2', {
     deliveryDate: Date,
     items: Array,
     billingAddressSameAsShipping: Boolean,
+    updatedDate: { type: Date, default: Date.now }
   });

@@ -1,11 +1,11 @@
-import {Order, OrderV2} from "../models/order"
+import {Order, OrderV2 } from "../models/order.js";
+import { validateStatusTransition, getAllowedTransitions, STATUS_DESCRIPTIONS } from "../services/order-status-validator.js";
 
 export const generateOrderNumber = () => {
     return `ORD-${Date.now()}`;
 };
 
 export async function createOrder(req, res) {
-// app.post('/api/user/:userId/orders', async (req, res) => {
     try {
       const { userId } = req.params;
       const { cartItems, totalAmount, discount, finalAmount, address, paymentMethod } = req.body;
@@ -32,7 +32,6 @@ export async function createOrder(req, res) {
   };
   
   export async function getOrderByUserId(req, res) {
-//   app.get('/api/user/:userId/orders', fetchuser, async (req, res) => {
     const { userId } = req.params;
   
     try {
@@ -46,7 +45,6 @@ export async function createOrder(req, res) {
   
   
   export async function getOrderById(req, res) {
-//   app.get('/api/orders/:orderId', async (req, res) => {
     const { orderId } = req.params;
   
     try {
@@ -60,7 +58,6 @@ export async function createOrder(req, res) {
 
 
   export async function getOrdersV2ByUserId(req, res) {
-//   app.get('/api/v2/orders', async (req, res) => {
     const userId = req.query.userId;
     if (!userId) return res.status(400).json({ message: 'User ID is required' });
   
@@ -73,7 +70,6 @@ export async function createOrder(req, res) {
   };
   
   export async function createOrderV2(req, res) {
-//   app.post('/api/v2/orders', async (req, res) => {
     const orderData = req.body;
   
     try {
@@ -84,4 +80,59 @@ export async function createOrder(req, res) {
       res.status(400).json({ message: err.message });
     }
   };
-  
+
+
+export async function updateOrderStatus(req, res) {
+  try {
+    const { orderNumber } = req.params;
+    const { newStatus, reason } = req.body;
+
+    // Validate input
+    if (!newStatus) {
+      return res.status(400).json({ 
+        error: 'New status is required' 
+      });
+    }
+
+    // Find the order by orderNumber
+    const order = await Order.findOne({ orderNumber });
+    if (!order) {
+      return res.status(400).json({ 
+        error: 'Order not found' 
+      });
+    }
+
+    const currentStatus = order.status;
+
+    // Validate status transition
+    const validation = validateStatusTransition(currentStatus, newStatus);
+    if (!validation.valid) {
+      return res.status(400).json({ 
+        error: validation.message,
+        currentStatus,
+        attemptedStatus: newStatus,
+        allowedTransitions: getAllowedTransitions(currentStatus)
+      });
+    }
+
+    // Update order status
+    order.status = newStatus;
+    order.updatedDate = new Date();
+    await order.save();
+
+    res.status(200).json({ 
+      orderId: order._id,
+      orderNumber: order.orderNumber,
+      previousStatus: currentStatus,
+      newStatus,
+      statusDescription: STATUS_DESCRIPTIONS[newStatus]
+    });
+
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(400).json({ 
+      error: 'Internal Server Error',
+      message: error.message 
+    });
+  }
+}
