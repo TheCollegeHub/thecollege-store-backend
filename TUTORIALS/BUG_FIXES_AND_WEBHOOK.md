@@ -47,7 +47,7 @@ git clone https://github.com/TheCollegeHub/thecollege-store-backend.git
 Navigate into the project folder and install the dependencies:
 ```
 cd thecollege-store-backend
-git
+git checkout feature/US-webhook-status-order
 npm install
 ```
 With all dependencies installed, you now need to set up the environment so that the database can be populated with initial data (products, discounts, etc.).
@@ -81,6 +81,14 @@ If everything is correct, you will receive a list of products, confirming that y
 ```
 http://localhost:4000
 ```
+
+**Note:** If you already setup the `MVP` previous and did some orders, you need now run a migration to populate a new field in `orders` collection in mongoDb.
+
+Now, all orders must have the `status` and `updatedDate`.
+Just copy and paste in the mongoShell the code you find in `release-notes/orders/add-status-to-orders.js`.
+After that, all orders already created will have the new fields and in this branch all NEW ORDERS created already will have these fields too.
+
+
 You are now ready to set up the frontend.
 ___
 
@@ -95,6 +103,7 @@ git clone https://github.com/TheCollegeHub/thecollege-store-frontend.git
 Navigate into the project folder and install dependencies:
 ```
 cd thecollege-store-frontend
+git checkout feature/US-bugFixes
 npm install
 ```
 Then start the frontend server:
@@ -107,20 +116,4 @@ http://localhost:3000/
 ```
 Your frontend is now running locally.
 
-**Note:** If you see an error, WELCOME, you're facing your first bug. Feel free to use your quality control investigation skills to find out where the problem is =). But don't worry, for now, you can ignore this error and move on to the next step.
-
-## 🛒 First Steps in The College Store
-
-You’re all set to explore The College Store (and maybe find some bugs 😄).
-
-To begin, create your account:
-
-- Click Login
-- Go to `Create an account? Click here`
-- Fill in all required information
-- Click Continue
-- Welcome Page should be displayed for you! 
-
-If everything worked, your account will be created and you’ll be automatically logged in
-
-**Enjoy exploring this simples ecosystem!**
+**Enjoy exploring the new changes in the ecosystem!**

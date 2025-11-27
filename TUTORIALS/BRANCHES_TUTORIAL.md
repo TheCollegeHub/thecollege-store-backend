@@ -26,7 +26,7 @@ Every step has its own documentation and instructions, which you will find linke
 
 Below is the ordered list of branches you can explore, each one adding new layers to the project.
 
-### **1️⃣ MVP — Minimum Viable Product (Backend + Frontend)**
+### MVP — Minimum Viable Product (Backend + Frontend)
 **Branch:** `main`  
 This branch contains the version of the ecosystem, that include only the `frontend` (initial features but it has a complete flow to make an order) and `backend core service`
 
@@ -34,6 +34,14 @@ This branch contains the version of the ecosystem, that include only the `fronte
 **[MVP_TUTORIAL.md](./MVP_TUTORIAL.md)**
 
 ___
+
+### BUG FIXES AND WEBHOOK STATUS ORDER (Backend + Frontend)
+**FrontEnd Branch:** `feature/US-bugFixes`  
+**Backend Core Branch:** `feature/US-webhook-status-order`  
+These branch contains the implementation of some bugs fixes and improvement in the order collection to create order status to track it better, it includes only the `frontend` and `backend core service`
+
+👉 Follow the step-by-step guide here:  
+**[BUG_FIXES_AND_WEBHOOK.md](./BUG_FIXES_AND_WEBHOOK.md)**
 
 Coming soon, the next tutorial branches ...
 Feel free to explore other branches if you want!
