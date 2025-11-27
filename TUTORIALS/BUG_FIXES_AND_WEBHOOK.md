@@ -14,6 +14,7 @@ Implementation of these changes:
 - Email format validation at Create Account      
 - Logic to apply WELCOME coupon at Checkout
 - Logic for Shipping Free
+- The order status on the Order Details page is no longer static but reflects the status generated during the purchase and modified by the Order Status Webhook.
 ___
 All changes in the branches used the `main` (our MVP product) branch as the source.
 
