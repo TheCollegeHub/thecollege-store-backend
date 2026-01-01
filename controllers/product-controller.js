@@ -7,7 +7,7 @@ import { extname } from "path";
 
 // endpoint for getting all products data
 export async function getAllproducts(req, res) {
-    let products = await Product.find({});
+    let products = await Product.find({}).populate('category');
     console.log("All Products");
     res.send(products);
   };
@@ -15,7 +15,7 @@ export async function getAllproducts(req, res) {
   
   // endpoint for getting latest products data
   export async function getNewcollections(req, res) {
-    let products = await Product.find({});
+    let products = await Product.find({}).populate('category');
     let arr = products.slice(0).slice(-8);
     console.log("New Collections");
     res.send(arr);
@@ -23,55 +23,126 @@ export async function getAllproducts(req, res) {
   
   
   // endpoint for getting women products data
+  // Now filters by gender instead of category
   export async function getPopularinwomen(req, res) {
-    let products = await Product.find({ category: "women" });
+    let products = await Product.find({ gender: "women" }).populate('category');
     let arr = products.splice(0, 4);
     console.log("Popular In Women");
     res.send(arr);
   };
   
-  // endpoint for getting women products data
-  
+  // endpoint for getting related products by category ID
   export async function getRelatedProducts(req, res) {
     console.log("Related Products");
-    const {category} = req.body;
-    const products = await Product.find({ category });
+    const { category } = req.body; // Expects categoryId (ObjectId)
+    
+    if (!category) {
+      return res.status(400).json({ error: 'Category ID is required' });
+    }
+    
+    const products = await Product.find({ category }).populate('category');
     const arr = products.slice(0, 4);
     res.send(arr);
+  };
+
+  // endpoint for getting related products by product ID
+  // Pass a product ID and get all products in the same category
+  export async function getRelatedProductsByProductId(req, res) {
+    console.log("Related Products By Product ID");
+    const { productId } = req.params;
+    const limit = req.query.limit || 4;
+    
+    if (!productId) {
+      return res.status(400).json({ error: 'Product ID is required' });
+    }
+    
+    try {
+      // Find the product
+      const product = await Product.findById(productId).populate('category');
+      
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      
+      // Get the category of this product
+      const category = product.category;
+      
+      // Find other products in the same category (excluding this product)
+      const relatedProducts = await Product.find({ 
+        category: category._id,
+        _id: { $ne: productId }
+      })
+      .populate('category')
+      .limit(parseInt(limit));
+      
+      res.status(200).json({
+        product: product,
+        relatedProducts: relatedProducts,
+        count: relatedProducts.length
+      });
+      
+    } catch (error) {
+      console.error('Error getting related products:', error);
+      res.status(400).json({ error: error.message });
+    }
   };
 
   
   
 // Create an endpoint for adding products using admin panel
+// Now requires category to be a valid Category ObjectId
 export async function addProduct(req, res) {
-    let products = await Product.find({});
-    let id;
-    if (products.length > 0) {
-      let last_product_array = products.slice(-1);
-      let last_product = last_product_array[0];
-      id = last_product.id + 1;
+    try {
+      const { name, description, image, category, gender, new_price, old_price } = req.body;
+      
+      if (!name || !description || !image || !category) {
+        return res.status(400).json({ success: false, error: 'Missing required fields' });
+      }
+      
+      let products = await Product.find({});
+      let id;
+      if (products.length > 0) {
+        let last_product_array = products.slice(-1);
+        let last_product = last_product_array[0];
+        id = last_product.id + 1;
+      }
+      else { id = 1; }
+      
+      const product = new Product({
+        id: id,
+        name: name,
+        description: description,
+        image: image,
+        category: category, // ObjectId reference
+        gender: gender || 'men', // Default to 'men' if not provided
+        new_price: new_price,
+        old_price: old_price,
+      });
+      
+      await product.save();
+      const populatedProduct = await product.populate('category');
+      console.log("Saved");
+      res.json({ success: true, name: name, product: populatedProduct })
+    } catch (error) {
+      console.error('Error adding product:', error);
+      res.status(400).json({ success: false, error: error.message });
     }
-    else { id = 1; }
-    const product = new Product({
-      id: id,
-      name: req.body.name,
-      description: req.body.description,
-      image: req.body.image,
-      category: req.body.category,
-      new_price: req.body.new_price,
-      old_price: req.body.old_price,
-    });
-    await product.save();
-    console.log("Saved");
-    res.json({ success: true, name: req.body.name })
   };
   
   
   // Create an endpoint for removing products using admin panel
   export async function removeProduct(req, res) {
-    await Product.findOneAndDelete({ id: req.body.id });
-    console.log("Removed");
-    res.json({ success: true, name: req.body.name })
+    try {
+      const product = await Product.findOneAndDelete({ id: req.body.id });
+      if (!product) {
+        return res.status(404).json({ success: false, error: 'Product not found' });
+      }
+      console.log("Removed");
+      res.json({ success: true, name: req.body.name })
+    } catch (error) {
+      console.error('Error removing product:', error);
+      res.status(400).json({ success: false, error: error.message });
+    }
   };
 
   
