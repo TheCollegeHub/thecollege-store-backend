@@ -11,7 +11,7 @@ This provides better data organization and enables filtering by both actual prod
 
 ## Files in This Directory
 
-### 1. `migrate_product_category_to_reference.mongodb.js`
+### 1. `migrate_product_category.js`
 **Forward Migration** - Converts category strings to ObjectId references
 
 #### How to Run:
@@ -45,7 +45,7 @@ use thecollegestore
 
 ---
 
-### 2. `rollback_product_category_to_string.mongodb.js`
+### 2. `rollback_product_category.js`
 **Rollback Migration** - Reverts category ObjectIds back to string names
 
 #### How to Run:
@@ -103,31 +103,19 @@ The following files were also updated to support this migration:
 
 ## Migration Steps
 
-### Step 1: Backup Database
-```bash
-# Backup your MongoDB database before proceeding
-mongodump --out ./backup
-```
-
-### Step 2: Update Application Code
+### Step 1: Update Application Code
 The model and controllers have already been updated. Make sure you have the latest code.
 
-### Step 3: Run Migration
-Choose one of two options:
+### Step 2: Run Migration
 
-**Option A: Using npm script (recommended)**
-```bash
-npm run migrations
-```
-
-**Option B: Using MongoDB Shell**
+**Using MongoDB Shell**
 ```bash
 mongosh
 use thecollegestore
-# Paste contents of migrate_product_category_to_reference.mongodb.js
+# Paste contents of migrate_product_category.js
 ```
 
-### Step 4: Verify
+### Step 3: Verify
 ```bash
 # In MongoDB Shell
 use thecollegestore
@@ -135,7 +123,7 @@ db.products.findOne()
 # Should show category as ObjectId instead of string
 ```
 
-### Step 5: Restart Application
+### Step 4: Restart Application
 ```bash
 npm start
 ```
@@ -175,7 +163,7 @@ POST /relatedproducts
 - Try running the migration again
 
 ### Need to rollback?
-1. Run `rollback_product_category_to_string.mongodb.js` in MongoDB Shell
+1. Run `rollback_product_category.js` in MongoDB Shell
 2. Revert the Product model schema back to `type: String`
 3. Restart the application
 
