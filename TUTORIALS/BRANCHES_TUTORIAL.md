@@ -43,5 +43,21 @@ These branch contains the implementation of some bugs fixes and improvement in t
 👉 Follow the step-by-step guide here:  
 **[BUG_FIXES_AND_WEBHOOK.md](./BUG_FIXES_AND_WEBHOOK.md)**
 
+---
+
+### RELATED PRODUCTS & CATEGORY REFACTORING (Backend + Frontend)
+**FrontEnd and Backend Core Branch:** `feature/US-relatedProducts`  
+This branch contains a major refactoring of the product category and gender structure to provide better related products recommendations. It separates product types from demographic attributes with a new Category model, refactored product schema, and improved related products endpoint.
+
+Key improvements:
+- Product `category` changed from string to ObjectId reference
+- New `gender` field for demographic targeting
+- New `GET /api/relatedproducts/:productId` endpoint for automatic related product detection
+- Database migration to handle the structural changes
+- Better data model scalability
+
+👉 Follow the step-by-step guide here:  
+**[RELATED_PRODUCTS_REFACTOR.md](./RELATED_PRODUCTS_REFACTOR.md)**
+
 Coming soon, the next tutorial branches ...
 Feel free to explore other branches if you want!
