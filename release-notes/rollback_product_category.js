@@ -13,11 +13,11 @@ db.products.updateMany(
   [
     {
       $set: {
-        category: "$gender",  // Restore original gender values to category
-      },
-      $unset: {
-        gender: ""  // Remove the gender field
+        category: "$gender"  // Restore original gender values to category
       }
+    },
+    {
+      $unset: "gender"  // Remove the gender field
     }
   ]
 );
